@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Is Your Life Still Fitting?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Roboto:wght@300;400&display=swap">
+<style>
+/* Layout: a quiet editorial column on white; a single rose hairline tracks progress. Single light theme by choice. */
+:root{
+  --canvas:#ffffff;
+  --rose:#f64a78;
+  --rose-ink:#c92d58;
+  --charcoal:#1a1a1a;
+  --gray:#615f5f;
+  --hair:#e6e3e4;
+  --wash:#faf8f9;
+  --display:"Montserrat", "Helvetica Neue", Arial, sans-serif;
+  --body:"Roboto", Arial, sans-serif;
+  color-scheme:light;
+}
+html,body{background:var(--canvas)}
+body{color:var(--charcoal);font-family:var(--body);font-weight:300;font-size:1.06rem;line-height:1.7}
+.wrap{max-width:36rem;margin:0 auto;padding-inline:20px;padding-block:3rem 4rem}
+
+.progress{display:flex;align-items:center;gap:1rem;margin-bottom:3rem}
+.track{flex:1;height:1px;background:var(--hair);position:relative}
+.track i{position:absolute;left:0;top:-.5px;height:2px;width:0;background:var(--rose);transition:width .6s ease}
+.count{font-family:var(--display);font-weight:500;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gray);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+h1,h2{font-family:var(--display);line-height:1.2;text-wrap:balance;margin:0;color:var(--charcoal)}
+h1{font-size:clamp(2rem,7vw,2.75rem);font-weight:300;letter-spacing:-.01em}
+h1 em{font-style:normal;font-weight:500;color:var(--rose)}
+h2{font-size:clamp(1.3rem,4.6vw,1.65rem);font-weight:400;letter-spacing:-.005em}
+.eyebrow{font-family:var(--display);font-size:.7rem;letter-spacing:.26em;text-transform:uppercase;color:var(--rose-ink);font-weight:600;margin:0}
+p{margin:0}
+.stack{display:flex;flex-direction:column;gap:1.4rem}
+.lede{color:var(--gray);max-width:32rem}
+.sub{font-family:var(--display);font-weight:500;font-size:1.02rem;line-height:1.5;color:var(--charcoal);margin-top:-.4rem;max-width:30rem}
+
+.options{display:flex;flex-direction:column;margin-top:.6rem;border-top:1px solid var(--hair)}
+.opt{all:unset;box-sizing:border-box;cursor:pointer;display:block;position:relative;padding:1.15rem 2.2rem 1.15rem 0;border-bottom:1px solid var(--hair);
+  color:var(--charcoal);line-height:1.5;transition:padding-left .3s ease,color .2s}
+.opt::after{content:"";position:absolute;right:.4rem;top:50%;width:.45rem;height:.45rem;margin-top:-.25rem;border-radius:50%;border:1px solid var(--hair);transition:background .2s,border-color .2s}
+.opt::before{content:"";position:absolute;left:0;top:50%;width:0;height:1px;background:var(--rose);transition:width .3s ease}
+@media (hover:hover) and (pointer:fine){
+  .opt:hover{padding-left:1.4rem}
+  .opt:hover::before{width:.9rem}
+  .opt:hover::after{border-color:var(--rose)}
+}
+.opt:focus-visible{outline:1px solid var(--charcoal);outline-offset:4px}
+.opt.picked{color:var(--rose-ink);padding-left:1.4rem}
+.opt.picked::before{width:.9rem}
+.opt.picked::after{background:var(--rose);border-color:var(--rose)}
+
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-block;padding:1rem 2.4rem;border-radius:2px;
+  background:var(--charcoal);color:var(--canvas);font-family:var(--display);font-weight:500;font-size:.78rem;letter-spacing:.24em;text-transform:uppercase;transition:background .25s}
+.btn:hover{background:var(--rose-ink)}
+.btn:focus-visible{outline:1px solid var(--charcoal);outline-offset:4px}
+a.btn{text-decoration:none}
+.link{all:unset;cursor:pointer;color:var(--gray);font-family:var(--display);font-size:.7rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;align-self:flex-start;padding-block:.3rem;border-bottom:1px solid var(--hair)}
+.link:hover{color:var(--charcoal);border-color:var(--charcoal)}
+.link:focus-visible{outline:1px solid var(--rose);outline-offset:3px}
+.row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+
+.note{font-size:.82rem;color:var(--gray)}
+.gate{display:flex;flex-direction:column;gap:1.1rem;max-width:28rem}
+.field{display:flex;flex-direction:column;gap:.35rem}
+.field label{font-family:var(--display);font-size:.68rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gray)}
+.field input{font:inherit;font-weight:400;color:var(--charcoal);background:var(--canvas);border:0;border-bottom:1px solid var(--gray);border-radius:0;padding:.6rem 0;width:100%;min-width:0;outline:none;transition:border-color .2s}
+.field input:focus{border-bottom:2px solid var(--rose);padding-bottom:calc(.6rem - 1px)}
+.field input[aria-invalid="true"]{border-bottom-color:var(--rose-ink)}
+.err{font-size:.85rem;color:var(--rose-ink);min-height:1.2em}
+.btn[disabled]{opacity:.6;cursor:wait}
+.rule{width:3rem;height:2px;background:var(--rose);border:0;margin:0}
+.result-card{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding-block:1.8rem}
+.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:1rem}
+.steps li{counter-increment:s;display:grid;grid-template-columns:2.2rem 1fr;gap:.5rem}
+.steps li::before{content:counter(s,decimal-leading-zero);font-family:var(--display);font-weight:500;font-size:.78rem;letter-spacing:.1em;color:var(--rose-ink);padding-top:.3rem}
+.also{font-style:italic;color:var(--gray);padding-left:1.1rem;border-left:2px solid var(--rose)}
+.cta{background:var(--wash);padding:2rem 1.6rem}
+.cta p{max-width:30rem}
+
+.fade{animation:fade .5s ease both}
+@keyframes fade{from{opacity:.001;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.opt,.track i,.btn,.opt::before{transition:none}.fade{animation:none}}
+</style>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="progress" aria-hidden="true">
+    <span class="track"><i id="bar"></i></span>
+    <span class="count" id="stepLabel">Begin</span>
+  </div>
+  <section id="screen" class="stack" aria-live="polite"></section>
+</main>
+
+<script>
+const CONTACT = {
+  site: "https://lovetoliveinknoxville.com",
+  calendly: "https://calendly.com/christine-sparks/lets-connect"
+};
+
+// Where each email goes. Paste the form/webhook address here once it's chosen.
+// Fields sent: first_name, email, result, also_touched_on, source
+const LEAD = {
+  endpoint: "",
+  fields: { first_name: "first_name", email: "email", result: "result", also: "also_touched_on", source: "source" }
+};
+
+// H = home no longer fits, R = relationship, D = her own dreams & identity, P = already in harmony
+const QUESTIONS = [
+  // Stage 1: Recognizing the disconnect
+  { q: "Which word feels closest to the way home feels right now?", a: [
+    ["Sanctuary","P"],
+    ["Obligation","H"],
+    ["Distant","R"],
+    ["On hold","D"]]},
+  { q: "If you're honest, who is your home really built around?", a: [
+    ["The life I'm living right now. It fits me.","P"],
+    ["A family schedule that doesn't exist anymore.","H"],
+    ["Keeping the peace.","R"],
+    ["Everyone's needs but mine.","D"]]},
+  { q: "The milestone finally arrived: the kids launched, the career peaked, the pace slowed. What surprised you?", a: [
+    ["How good it feels. I'm savoring it.","P"],
+    ["How big and quiet the house suddenly felt.","H"],
+    ["How little we had to say once the busyness faded.","R"],
+    ["That I had no idea what to do with myself next.","D"]]},
+  { q: "How much of your home do you actually use on a regular basis?", a: [
+    ["All of it. Every space earns its place.","P"],
+    ["A kitchen, a bedroom, a favorite chair. The rest waits for a life that's moved on.","H"],
+    ["Mostly the spaces where I can have a little room to myself.","R"],
+    ["I pass through it more than I live in it. None of it feels like mine.","D"]]},
+  { q: "When you think about maintaining your home today, does it feel energizing or exhausting?", a: [
+    ["Energizing. Tending it still brings me joy.","P"],
+    ["Exhausting. The roof, the yard, the rooms no one uses, all asking for something.","H"],
+    ["Like one more thing I carry mostly on my own.","R"],
+    ["Like time I'll never get back for the things I actually love.","D"]]},
+  { q: "When someone calls you \"the strong one,\" part of you thinks…", a: [
+    ["Thank you. I've earned it, and I feel it.","P"],
+    ["If only they knew what it takes to keep all of this running.","H"],
+    ["Strong is what I've had to be, so no one sees how alone I feel.","R"],
+    ["I'd trade a little strong for a little soft.","D"]]},
+  { q: "If you were choosing a home today, just for the life you live now, would you choose this one again?", a: [
+    ["Without hesitating. It still fits me beautifully.","P"],
+    ["Honestly? Probably not. It was perfect for who we were then.","H"],
+    ["I'd choose one that feels peaceful, and I'm not sure this one does anymore.","R"],
+    ["I'm not sure I've ever chosen a home just for me.","D"]]},
+  // Stage 2: What's keeping her there
+  { q: "What's the biggest reason you've stayed in your current home?", a: [
+    ["I love it here. It's that simple.","P"],
+    ["The memories, and the thought of sorting through every one of them.","H"],
+    ["Leaving would mean facing bigger questions than where to live.","R"],
+    ["Everyone else is settled here. I've never asked whether I am.","D"]]},
+  { q: "Holding everything together has quietly cost you…", a: [
+    ["Very little. I have good help and good boundaries.","P"],
+    ["My weekends, my energy, and more money than I'd like to admit.","H"],
+    ["Honest conversations I keep postponing.","R"],
+    ["Pieces of myself I didn't notice I was giving away.","D"]]},
+  { q: "If you told the full truth about how you feel lately, the hardest person to tell would be…", a: [
+    ["No one. I'm honest with the people I love.","P"],
+    ["My family. They'd say, \"But this is our home.\"","H"],
+    ["The person who sleeps beside me.","R"],
+    ["Myself.","D"]]},
+  { q: "Your closest relationship at home, in one honest image:", a: [
+    ["Two hands still reaching for each other.","P"],
+    ["A great team, but the house gets more attention than we do.","H"],
+    ["Two polite roommates passing in the hallway.","R"],
+    ["A role I play beautifully while the real me waits offstage.","D"]]},
+  { q: "Over the years, you've become remarkably good at…", a: [
+    ["Building a life I'm proud of, and actually enjoying it.","P"],
+    ["Keeping a beautiful house running that no one fully lives in anymore.","H"],
+    ["Reading the room and keeping everyone comfortable.","R"],
+    ["Anticipating everyone's needs before they know they have them.","D"]]},
+  { q: "When the house goes quiet at night, the thought that slips in is…", a: [
+    ["\"Today was a good day.\"","P"],
+    ["\"This much house for this little life.\"","H"],
+    ["\"Is this all there is for us?\"","R"],
+    ["\"When did I stop dreaming?\"","D"]]},
+  { q: "The 25-year-old you would look at your life today and say…", a: [
+    ["\"We did it. And we're happy.\"","P"],
+    ["\"Why are we still taking care of all this?\"","H"],
+    ["\"Is this the love we dreamed about?\"","R"],
+    ["\"Where did all our big plans go?\"","D"]]},
+  // Stage 3: What comes next
+  { q: "When was the last time someone asked what you want, and you had an answer ready?", a: [
+    ["Recently. I know what I want, and I ask for it.","P"],
+    ["I know exactly what I'd say: less to manage, more life. I just haven't said it out loud.","H"],
+    ["I can't remember the last time anyone asked.","R"],
+    ["Someone asked. I froze.","D"]]},
+  { q: "If you had one year with no one depending on you, you would…", a: [
+    ["Live much as I do now, with a little more travel.","P"],
+    ["Simplify everything and live closer to what I love.","H"],
+    ["Find out who I am on my own.","R"],
+    ["Finally chase the idea I've kept in a drawer for years.","D"]]},
+  { q: "Have you found yourself wondering what your home might be worth?", a: [
+    ["Not really. It isn't something I think about.","P"],
+    ["More than once, usually late at night.","H"],
+    ["Quietly. I'd want to know where I stand, just in case.","R"],
+    ["Sometimes. Mostly I wonder what that freedom could make possible.","D"]]},
+  { q: "A life of purpose, passion, and harmony would require…", a: [
+    ["Mostly what I already have.","P"],
+    ["A home that gives me time back instead of taking it.","H"],
+    ["A partnership that feels like oxygen, not obligation.","R"],
+    ["Permission to put myself back on the list, near the top.","D"]]},
+  { q: "What would you do if you knew no one would be disappointed?", a: [
+    ["Pretty much what I'm doing. That's a gift.","P"],
+    ["Trade all this upkeep for a home that fits the life I want now.","H"],
+    ["Have the conversation I've been avoiding.","R"],
+    ["Say yes to myself, for once, without apologizing.","D"]]},
+  { q: "Finish the sentence: \"Lately, I've been wondering…\"", a: [
+    ["…how to savor this beautiful season even more.","P"],
+    ["…if this is still the right place for this chapter of my life.","H"],
+    ["…whether we still want the same things.","R"],
+    ["…whatever happened to the woman who wanted more.","D"]]}
+];
+
+const RESULTS = {
+  H: {
+    title: "Your home is holding you in a chapter you've already finished",
+    body: "You built this home with love, for a season that asked everything of you, and you gave it everything. That season is complete. But the rooms, the upkeep, and the square footage are still asking, and the life you want next needs your time, your energy, and your freedom back. Letting go of what no longer fits isn't loss. It's making room.",
+    steps: [
+      "Count the hours each month your home asks of you. Then imagine giving them to yourself.",
+      "Describe your ideal ordinary day in this next chapter: where you are, who you're with, what's outside the window.",
+      "Ask what kind of home would support that life, rather than the one you've already lived."
+    ],
+    cta: "If you're ready to explore what a home built for your next chapter could look like, I'd be honored to talk it through with you.",
+    button: "Explore your next chapter", link: "calendly"
+  },
+  R: {
+    title: "Your heart has been asking a question you haven't said out loud",
+    body: "You've kept the peace for a long time, and you've done it gracefully. But harmony and quiet aren't the same thing. Some of your answers suggest the life inside your walls may not be the partnership you deserve. You don't need to decide anything today. You only need to stop pretending you didn't notice.",
+    steps: [
+      "Write down how you would want home to feel if you were completely honest with yourself.",
+      "Share it with someone safe: a trusted friend, a counselor, or a therapist.",
+      "Remember you've done hard things before. Whatever comes next, you won't have to do it alone."
+    ],
+    cta: "When and if you're ready, I'm here for a completely private conversation about what home could look like on the other side.",
+    button: "Have a confidential conversation", link: "calendly"
+  },
+  D: {
+    title: "You gave everyone else your best years. This chapter is yours.",
+    body: "You've been the planner, the provider, the one who held it all together. Everyone is okay now, largely because of you. But somewhere along the way you stopped asking what you want. That restlessness is the woman with big dreams asking to be let back in. She's ready for a life of purpose, passion, and joy, and she's been waiting for your permission.",
+    steps: [
+      "Name one dream you set aside, and say it out loud to someone who will cheer.",
+      "Notice where your time, money, and energy go, and whether they're building the life you want.",
+      "Ask whether your home is a launchpad for this chapter or an anchor to the last one."
+    ],
+    cta: "If your next chapter begins with a home that sets you free, I'd love to help you find it.",
+    button: "Find a home that sets you free", link: "calendly"
+  },
+  P: {
+    title: "You're living in harmony",
+    body: "Your answers suggest you've done what so many women never manage: built a life that fits, and kept a place for yourself in it. Protect that.",
+    steps: [
+      "Notice what keeps this season feeling good, and guard it.",
+      "Check in with yourself again when life shifts. It always does."
+    ],
+    cta: "If your needs change down the road, I'll be here."
+  }
+};
+const LABELS = {H:"a home that no longer fits", R:"your closest relationship", D:"the dreams you set aside"};
+
+const screen = document.getElementById("screen");
+const stepLabel = document.getElementById("stepLabel");
+let answers = [];
+let orders = [];
+function shuffle(n){ const a=[...Array(n).keys()]; for(let i=n-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];} return a; }
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function setSky(fraction, label){
+    document.getElementById("bar").style.width = (fraction*100) + "%";
+  stepLabel.textContent = label;
+}
+function fresh(){ screen.innerHTML=""; screen.classList.remove("fade"); void screen.offsetWidth; screen.classList.add("fade"); }
+function el(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+
+function showIntro(){
+  answers = [];
+  orders = QUESTIONS.map(q => shuffle(q.a.length));
+  setSky(0, "Begin");
+  fresh();
+  screen.append(
+    (()=>{const h=el("h1");h.innerHTML="Does your life <em>still fit?</em>";return h})(),
+    el("p","sub","A 5-minute reflection for women navigating life's next chapter"),
+    el("p","lede","You've spent years taking care of everyone and everything. Take a few quiet minutes for yourself. Answer honestly, especially the questions that sting a little."),
+  );
+  const b = el("button","btn","Begin");
+  b.onclick = () => showQuestion(0);
+  const r = el("div","row"); r.append(b);
+  screen.append(r, el("p","note","Your individual answers stay private."));
+}
+
+function showQuestion(i){
+  const Q = QUESTIONS[i];
+  setSky(i / QUESTIONS.length, `${String(i+1).padStart(2,"0")} / ${QUESTIONS.length}`);
+  fresh();
+  screen.append(el("h2",null,Q.q));
+  const opts = el("div","options");
+  let locked = false;
+  orders[i].map(n => Q.a[n]).forEach(([text,key]) => {
+    const o = el("button","opt");
+    o.textContent = text;
+    o.onclick = () => {
+      if(locked) return; locked = true;
+      answers[i] = key; o.classList.add("picked");
+      setTimeout(() => i+1 < QUESTIONS.length ? showQuestion(i+1) : showGate(), reduce ? 0 : 380);
+    };
+    opts.append(o);
+  });
+  screen.append(opts);
+  if(i>0){
+    const back = el("button","link","Back");
+    back.onclick = () => showQuestion(i-1);
+    screen.append(back);
+  }
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  window.scrollTo({top:0});
+}
+
+function score(){
+  const t = {H:0,R:0,D:0,P:0};
+  answers.forEach(k => t[k]++);
+  const ranked = ["H","R","D"].sort((a,b) => t[b]-t[a]);
+  // Mostly peaceful answers win only if no unrest theme clearly stands out
+  if (t.P >= 12 && t[ranked[0]] <= 4) return {main:"P"};
+  const main = t[ranked[0]] > 0 ? ranked[0] : "P";
+  const second = t[ranked[1]] >= 5 && main !== "P" ? ranked[1] : null;
+  return {main, second};
+}
+
+const RESULT_NAMES = {H:"Home no longer fits", R:"Relationship", D:"Reclaiming her dreams", P:"Living in harmony"};
+
+function sendLead(first, email){
+  const {main, second} = score();
+  const f = LEAD.fields, data = new URLSearchParams();
+  data.append(f.first_name, first);
+  data.append(f.email, email);
+  data.append(f.result, RESULT_NAMES[main]);
+  data.append(f.also, second ? RESULT_NAMES[second] : "");
+  data.append(f.source, "Does your life still fit? quiz");
+  if(!LEAD.endpoint){ console.warn("Quiz: no LEAD.endpoint set, email not sent."); return Promise.resolve(); }
+  const send = fetch(LEAD.endpoint, {method:"POST", mode:"no-cors", body:data}).catch(()=>{});
+  // never keep her waiting more than 4 seconds
+  return Promise.race([send, new Promise(r => setTimeout(r, 4000))]);
+}
+
+function showGate(){
+  setSky(1, "Almost there");
+  fresh();
+  screen.append(
+    el("p","eyebrow","Your reflection is ready"),
+    el("h2",null,"Where should I send encouragement for this next chapter?"),
+    el("p","lede","Enter your email to reveal your reflection and your next steps.")
+  );
+  const form = el("form","gate"); form.noValidate = true;
+  const mk = (id, label, type, ac, req) => {
+    const w = el("div","field"); const l = el("label",null,label); l.htmlFor = id;
+    const i = el("input"); i.id = id; i.name = id; i.type = type; i.autocomplete = ac; if(req) i.required = true;
+    w.append(l, i); return [w, i];
+  };
+  const [fw, fi] = mk("first_name","First name","text","given-name",false);
+  const [ew, ei] = mk("email","Email","email","email",true);
+  ei.inputMode = "email";
+  const err = el("p","err"); err.setAttribute("role","alert");
+  const btn = el("button","btn","Reveal my reflection"); btn.type = "submit";
+  const r = el("div","row"); r.append(btn);
+  form.append(fw, ew, err, r, el("p","note","Private. Never shared. Unsubscribe anytime."));
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const email = ei.value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){
+      err.textContent = "Please enter a valid email address, like name@example.com.";
+      ei.setAttribute("aria-invalid","true"); ei.focus(); return;
+    }
+    ei.removeAttribute("aria-invalid"); err.textContent = "";
+    btn.disabled = true; btn.textContent = "One moment…";
+    await sendLead(fi.value.trim(), email);
+    showResult();
+  });
+  screen.append(form);
+  const back = el("button","link","Back");
+  back.onclick = () => showQuestion(QUESTIONS.length-1);
+  screen.append(back);
+  window.scrollTo({top:0});
+}
+
+function showResult(){
+  const {main, second} = score();
+  const R = RESULTS[main];
+  setSky(1, "Complete");
+  fresh();
+  screen.append(el("p","eyebrow","Your reflection"), el("h1",null,R.title), el("p",null,R.body));
+
+  const card = el("div","result-card stack");
+  card.append(el("p","eyebrow","Where to begin"));
+  const ol = el("ol","steps"); R.steps.forEach(s => ol.append(el("li",null,s)));
+  card.append(ol);
+  screen.append(card);
+
+  if(second){
+    screen.append(el("p","also",`A few of your answers also touched on ${LABELS[second]}. These feelings often travel together, and each one deserves your attention.`));
+  }
+
+  const cta = el("div","cta stack");
+  cta.append(el("hr","rule"), el("p",null,R.cta));
+  if(R.button){
+    const go = el("a","btn",R.button); go.href = CONTACT[R.link]; go.target="_blank"; go.rel="noopener";
+    const r = el("div","row"); r.append(go); cta.append(r);
+  }
+  screen.append(cta);
+  const again = el("button","link","Take the quiz again");
+  again.onclick = showIntro;
+  screen.append(again);
+  screen.append(el("p","note","This quiz is a reflection tool, not professional counseling or legal advice."));
+  window.scrollTo({top:0});
+}
+
+showIntro();
+</script>
+</body>
+</html>
